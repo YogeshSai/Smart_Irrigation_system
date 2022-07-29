@@ -1,0 +1,49 @@
+//>2000 dry
+//1500 - 1550 wet
+
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
+
+#define AOUT_PIN A0 // ESP32 pin GIOP36 (ADC0) that connects to AOUT pin of moisture sensor
+#define M 2
+float p;
+float per;
+
+WidgetLED led3(V6);
+
+char auth[] = "AUTH_CODE";
+char ssid[] = "Wifi_SSID";
+char pass[] = "Wifi_Pass";
+
+BlynkTimer timer;
+void myTimerEvent()
+{
+}
+
+void setup() {
+  pinMode(M, OUTPUT);
+  Serial.begin(115200);
+  Blynk.begin(auth, ssid, pass);
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+  int value = analogRead(AOUT_PIN);
+  p = (100-(analogRead(AOUT_PIN)*100)/4096);
+  Blynk.virtualWrite(V5, p);
+  
+  if (value >2000)
+  {
+    digitalWrite(M, HIGH);
+    led3.on();
+  }
+  else
+  {
+    digitalWrite(M, LOW);
+    led3.off();
+  }
+  delay(500);
+  digitalWrite(M, LOW);
+}
